@@ -49,6 +49,15 @@ print(mean(totalperday_clean$steps))
 
 ## What is the average daily activity pattern?
 
+```r
+library(dplyr)
+dailypattern <- group_by(data,interval)
+dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
+max <- max(dailypattern$steps)+max(dailypattern$steps)/10
+plot(dailypattern$interval,dailypattern$steps,type="l",ylim=c(0,max))
+```
+
+![](Report_files/figure-html/unnamed-chunk-3-1.png) 
 
 
 ## Imputing missing values
