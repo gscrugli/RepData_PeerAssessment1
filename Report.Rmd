@@ -17,10 +17,11 @@ The column names in  the data set are: `r colnames(data)`.
 library(dplyr)
 totalperday <- group_by(data,date)
 totalperday <- summarize(totalperday,steps=sum(steps))
-cleanup <- !is.na(totalperday$steps)
-totalperday_clean <- totalperday[cleanup,]
-result <- round(mean(totalperday_clean$steps),0)
-print(result)
+hist(totalperday$steps)
+totalmean  <- mean(totalperday$steps, na.rm=TRUE)
+totalmedian <- median(totalperday$steps, na.rm=TRUE)
+print(totalmean)
+print(totalmedian)
 ```
 
 ## What is the average daily activity pattern?

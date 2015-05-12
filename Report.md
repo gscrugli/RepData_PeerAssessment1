@@ -30,14 +30,27 @@ library(dplyr)
 ```r
 totalperday <- group_by(data,date)
 totalperday <- summarize(totalperday,steps=sum(steps))
-cleanup <- !is.na(totalperday$steps)
-totalperday_clean <- totalperday[cleanup,]
-result <- round(mean(totalperday_clean$steps),0)
-print(result)
+hist(totalperday$steps,freq=FALSE)
+```
+
+![](Report_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
+totalmean  <- mean(totalperday$steps, na.rm=TRUE)
+totalmedian <- median(totalperday$steps, na.rm=TRUE)
+print(totalmean)
 ```
 
 ```
-## [1] 10766
+## [1] 10766.19
+```
+
+```r
+print(totalmedian)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
