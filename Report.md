@@ -1,19 +1,12 @@
 # Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
+The data relevant for this submission is in a standard csv file.
 
 ```r
 data <- read.csv("activity.csv")
-str(data)
 ```
-
-```
-## 'data.frame':	17568 obs. of  3 variables:
-##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
-```
-
+The column names in  the data set are: steps, date, interval.
 
 ## What is mean total number of steps taken per day?
 
@@ -39,13 +32,13 @@ totalperday <- group_by(data,date)
 totalperday <- summarize(totalperday,steps=sum(steps))
 cleanup <- !is.na(totalperday$steps)
 totalperday_clean <- totalperday[cleanup,]
-print(mean(totalperday_clean$steps))
+result <- round(mean(totalperday_clean$steps),0)
+print(result)
 ```
 
 ```
-## [1] 10766.19
+## [1] 10766
 ```
-
 
 ## What is the average daily activity pattern?
 
@@ -53,12 +46,16 @@ print(mean(totalperday_clean$steps))
 library(dplyr)
 dailypattern <- group_by(data,interval)
 dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
-max <- max(dailypattern$steps)+max(dailypattern$steps)/10
-plot(dailypattern$interval,dailypattern$steps,type="l",ylim=c(0,max))
+max <- max(dailypattern$steps)
+limit <- max+max(dailypattern$steps)/10
+plot(dailypattern$interval/100,dailypattern$steps,type="l",ylim=c(0,limit))
 ```
 
 ![](Report_files/figure-html/unnamed-chunk-3-1.png) 
 
+The average maximum number of steps done in a 5 minute intervall is 206.17.
+
+The average maximum number of steps are done between 8:30 and 8:35 
 
 ## Imputing missing values
 

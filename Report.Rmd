@@ -6,11 +6,11 @@ output:
 ---
 
 ## Loading and preprocessing the data
+The data relevant for this submission is in a standard csv file.
 ```{r}
 data <- read.csv("activity.csv")
-str(data)
 ```
-
+The column names in  the data set are: `r colnames(data)`.
 
 ## What is mean total number of steps taken per day?
 ```{r}
@@ -19,19 +19,27 @@ totalperday <- group_by(data,date)
 totalperday <- summarize(totalperday,steps=sum(steps))
 cleanup <- !is.na(totalperday$steps)
 totalperday_clean <- totalperday[cleanup,]
-print(mean(totalperday_clean$steps))
+result <- round(mean(totalperday_clean$steps),0)
+print(result)
 ```
-
 
 ## What is the average daily activity pattern?
 ```{r}
 library(dplyr)
 dailypattern <- group_by(data,interval)
 dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
-max <- max(dailypattern$steps)+max(dailypattern$steps)/10
-plot(dailypattern$interval,dailypattern$steps,type="l",ylim=c(0,max))
+max <- max(dailypattern$steps)
+limit <- max+max(dailypattern$steps)/10
+plot(dailypattern$interval/100,dailypattern$steps,type="l",ylim=c(0,limit))
 ```
 
+The average maximum number of steps done in a 5 minute intervall is `r round(max,2)`.
+```{r, echo=FALSE}
+subset <- dailypattern[dailypattern$steps==max,]
+hour <- floor(subset$interval/100)
+min <- subset$interval - hour*100
+```
+The average maximum number of steps are done between `r hour`:`r min-5` and `r hour`:`r min` 
 
 ## Imputing missing values
 
