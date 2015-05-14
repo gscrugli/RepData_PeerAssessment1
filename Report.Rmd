@@ -43,7 +43,33 @@ min <- subset$interval - hour*100
 The average maximum number of steps are done between `r hour`:`r min-5` and `r hour`:`r min` 
 
 ## Imputing missing values
+First lets count the number of NA available in the data set.
+```{r}
+nadata <- is.na(data$steps)
+sum(nadata)
+```
+The number of NAs availbale in the dataset are `r sum(nadata)`.
 
+The proposed strategy in the Assessment is to fill in mean/median in the NAs.
+I'll replace the NA with the mean of the corrisponding 5-minute intervall.
+```{r}
+grouped <- group_by(data,date)
+meanperday <- summarize(grouped,meanperday=mean(steps,na.rm=TRUE))
+temp <- data
+for(i in meanperday$date){
+       for(j in temp[temp$date==i,3]){
+               temp[temp$date==i & temp$interval==j,1] <- meanperday[meanperday$date==i,1]
+       }
+}
+```
+Here the histogramm of total number of steps per day for the data without NA's:
+```{r}
+resultset <- group_by(temp,date)
+resultset <- summarize(resultset,steps=sum(steps))
+hist(resultset$steps)
+```
+
+The mean of steps per day now is `r mean(resultset$steps)` and the median of steps per day now is `r median(resultset$steps)`
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
