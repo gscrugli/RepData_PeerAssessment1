@@ -7,6 +7,9 @@ The data relevant for this submission is in a standard csv file.
 data <- read.csv("activity.csv")
 ```
 The column names in  the data set are: steps, date, interval.
+The dimensions of the dataset are..
+* number of columns = 3 
+* number of rows = 17568
 
 ## What is mean total number of steps taken per day?
 
@@ -89,24 +92,36 @@ I'll replace the NA with the mean of the corrisponding 5-minute intervall.
 ```r
 grouped <- group_by(data,date)
 meanperday <- summarize(grouped,meanperday=mean(steps,na.rm=TRUE))
-temp <- data
 for(i in meanperday$date){
-       for(j in temp[temp$date==i,3]){
-               temp[temp$date==i & temp$interval==j,1] <- meanperday[meanperday$date==i,1]
+       for(j in data[data$date==i,3]){
+                if (meanperday[meanperday$date==i,2] == 'NaN'){
+                        data[data$date==i & data$interval==j,1] <- 0  
+                }   
+                else {
+                        data[data$date==i & data$interval==j,1] <- meanperday[meanperday$date==i,2]
+                }
        }
 }
+nadata <- is.na(data$steps)
+sum(nadata)
 ```
+
+```
+## [1] 0
+```
+
 Here the histogramm of total number of steps per day for the data without NA's:
 
 ```r
-resultset <- group_by(temp,date)
+resultset <- group_by(data,date)
 resultset <- summarize(resultset,steps=sum(steps))
 hist(resultset$steps)
 ```
 
 ![](Report_files/figure-html/unnamed-chunk-7-1.png) 
 
-The mean of steps per day now is 8928 and the median of steps per day now is 8928
+The mean of steps per day now is 9354 and the median of steps per day now is 1.0395\times 10^{4}
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
