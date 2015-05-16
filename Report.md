@@ -64,7 +64,7 @@ dailypattern <- group_by(data,interval)
 dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
 max <- max(dailypattern$steps)
 limit <- max+max(dailypattern$steps)/10
-plot(dailypattern$interval/100,dailypattern$steps,type="l",ylim=c(0,limit))
+plot(dailypattern$interval/100,dailypattern$steps,type="l",ylim=c(0,limit),ylab="mean number of steps",xlab="intarval in a day")
 ```
 
 ![](Report_files/figure-html/unnamed-chunk-3-1.png) 
@@ -102,12 +102,6 @@ for(i in meanperday$date){
                 }
        }
 }
-nadata <- is.na(data$steps)
-sum(nadata)
-```
-
-```
-## [1] 0
 ```
 
 Here the histogramm of total number of steps per day for the data without NA's:
@@ -120,8 +114,32 @@ hist(resultset$steps)
 
 ![](Report_files/figure-html/unnamed-chunk-7-1.png) 
 
-The mean of steps per day now is 9354 and the median of steps per day now is 1.0395\times 10^{4}
+
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+```r
+for(i in 1:length(data$date)){
+       data[i,4] <- weekdays(as.Date(data[i,2]))
+}
+colnames(data)[4] <- c("weekday")
+dataweekday <- data[data$weekday %in% c("Montag","Dienstag","Mittwoch","Donnerstag","Freitag"),]
+dataweekend <- data[data$weekday %in% c("Samstag","Sonntag"),]
+
+par(mfrow=c(2,1),mar=c(4,4,2,2))
+
+dailypatterna <- group_by(dataweekday,interval)
+dailypatterna <- summarize(dailypatterna,steps=mean(steps,na.rm=TRUE))
+max <- max(dailypatterna$steps)
+limit <- max+max(dailypatterna$steps)/10
+plot(dailypatterna$interval/100,dailypatterna$steps,ylab="Steps",xlab="", main="weekday",type="l",ylim=c(0,limit))
+
+dailypattern <- group_by(dataweekend,interval)
+dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
+max <- max(dailypattern$steps)
+limit <- max+max(dailypattern$steps)/10
+plot(dailypattern$interval/100,dailypattern$steps,ylab="Steps",xlab="", main="weekend",type="l",ylim=c(0,limit))
+```
+
+![](Report_files/figure-html/unnamed-chunk-8-1.png) 
