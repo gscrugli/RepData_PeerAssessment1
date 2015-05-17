@@ -8,6 +8,7 @@ data <- read.csv("activity.csv")
 ```
 The column names in  the data set are: steps, date, interval.
 The dimensions of the dataset are..
+
 * number of columns = 3 
 * number of rows = 17568
 
@@ -87,20 +88,16 @@ sum(nadata)
 The number of NAs availbale in the dataset are 2304.
 
 The proposed strategy in the Assessment is to fill in mean/median in the NAs.
-I'll replace the NA with the mean of the corrisponding 5-minute intervall.
+I'll replace the NA with the mean.
 
 ```r
 grouped <- group_by(data,date)
-meanperday <- summarize(grouped,meanperday=mean(steps,na.rm=TRUE))
-for(i in meanperday$date){
-       for(j in data[data$date==i,3]){
-                if (meanperday[meanperday$date==i,2] == 'NaN'){
-                        data[data$date==i & data$interval==j,1] <- 0  
-                }   
-                else {
-                        data[data$date==i & data$interval==j,1] <- meanperday[meanperday$date==i,2]
-                }
-       }
+grouped <- summarize(grouped,steps=mean(steps,na.rm=TRUE))
+mymean <- mean(grouped$steps,na.rm=TRUE)
+for(i in 1:length(data[,3])){
+        if (is.na(data[i,1])){
+                data[i,1] <- mymean
+        }
 }
 ```
 
@@ -121,25 +118,26 @@ hist(resultset$steps)
 
 ```r
 for(i in 1:length(data$date)){
-       data[i,4] <- weekdays(as.Date(data[i,2]))
+       if(weekdays(as.Date(data[i,2])) %in% c("Montag","Dienstag","Mittwoch","Donnerstag","Freitag")){
+               data[i,4] <- c("weekday")
+       }
+       else if(weekdays(as.Date(data[i,2])) %in% c("Samstag","Sonntag")){
+               data[i,4] <- c("weekend")
+       }
 }
-colnames(data)[4] <- c("weekday")
-dataweekday <- data[data$weekday %in% c("Montag","Dienstag","Mittwoch","Donnerstag","Freitag"),]
-dataweekend <- data[data$weekday %in% c("Samstag","Sonntag"),]
-
 par(mfrow=c(2,1),mar=c(4,4,2,2))
-
-dailypatterna <- group_by(dataweekday,interval)
-dailypatterna <- summarize(dailypatterna,steps=mean(steps,na.rm=TRUE))
-max <- max(dailypatterna$steps)
-limit <- max+max(dailypatterna$steps)/10
-plot(dailypatterna$interval/100,dailypatterna$steps,ylab="Steps",xlab="", main="weekday",type="l",ylim=c(0,limit))
-
-dailypattern <- group_by(dataweekend,interval)
+temp <- data[data$V4=="weekend",]
+dailypattern <- group_by(temp,interval)
 dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
 max <- max(dailypattern$steps)
 limit <- max+max(dailypattern$steps)/10
-plot(dailypattern$interval/100,dailypattern$steps,ylab="Steps",xlab="", main="weekend",type="l",ylim=c(0,limit))
+plot(dailypattern$interval/100,dailypattern$steps,type="l",ylim=c(0,limit),ylab="mean number of steps",xlab="",main="weekday")
+temp <- data[data$V4=="weekday",]
+dailypattern <- group_by(temp,interval)
+dailypattern <- summarize(dailypattern,steps=mean(steps,na.rm=TRUE))
+max <- max(dailypattern$steps)
+limit <- max+max(dailypattern$steps)/10
+plot(dailypattern$interval/100,dailypattern$steps,type="l",ylim=c(0,limit),ylab="mean number of steps",xlab="intarval in a day",main="weekday")
 ```
 
 ![](Report_files/figure-html/unnamed-chunk-8-1.png) 
